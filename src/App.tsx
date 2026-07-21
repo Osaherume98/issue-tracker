@@ -10,7 +10,7 @@ import Sidebar from './components/Sidebar';
 import {
   useAppDispatch,
   useAppSelector,
-} from './app/hook';
+} from './app/hooks';
 
 import {
   employeesSelectors,
@@ -19,6 +19,7 @@ import {
   selectEmployeesStatus,
 } from './features/employees/employeesSlice';
 
+
 import {
   fetchProjects,
   projectsSelectors,
@@ -26,7 +27,14 @@ import {
   selectProjectsStatus,
   selectSelectedProject,
   selectSelectedProjectId,
-} from './features/projects/projectSlice';
+} from './features/projects/projectsSlice';
+
+
+import {
+  fetchTasks,
+  selectTasksError,
+  selectTasksStatus,
+} from './features/tasks/tasksSlice';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -52,12 +60,20 @@ function App() {
     selectEmployeesStatus,
   );
 
+  const tasksStatus = useAppSelector(
+    selectTasksStatus,
+  );``
+
   const projectsError = useAppSelector(
     selectProjectsError,
   );
 
   const employeesError = useAppSelector(
     selectEmployeesError,
+  );
+
+    const tasksError = useAppSelector(
+    selectTasksError,
   );
 
   const selectedProject = useAppSelector(
@@ -68,30 +84,38 @@ function App() {
     selectSelectedProjectId,
   );
 
-  useEffect(() => {
-    if (hasInitialised.current) {
-      return;
-    }
+useEffect(() => {
+  if (hasInitialised.current) {
+    return;
+  }
 
-    hasInitialised.current = true;
+  hasInitialised.current = true;
 
-    void dispatch(fetchProjects());
-    void dispatch(fetchEmployees());
-  }, [dispatch]);
+  void dispatch(fetchProjects());
 
-  const isLoading =
-    projectsStatus === 'loading' ||
-    employeesStatus === 'loading' ||
-    projectsStatus === 'idle' ||
-    employeesStatus === 'idle';
+  void dispatch(fetchEmployees());
+
+  void dispatch(fetchTasks());
+
+}, [dispatch]);
+
+const isLoading =
+  projectsStatus === 'loading' ||
+  employeesStatus === 'loading' ||
+  tasksStatus === 'loading' ||
+  projectsStatus === 'idle' ||
+  employeesStatus === 'idle' ||
+  tasksStatus === 'idle';
 
   const hasError =
     projectsStatus === 'failed' ||
-    employeesStatus === 'failed';
+    employeesStatus === 'failed' ||
+    tasksStatus === 'failed';
 
   const handleRetry = (): void => {
     void dispatch(fetchProjects());
     void dispatch(fetchEmployees());
+    void dispatch(fetchTasks());
   };
 
   if (isLoading) {
@@ -119,6 +143,7 @@ function App() {
         <p>
           {projectsError ??
             employeesError ??
+            tasksError ??
             'An unexpected error occurred.'}
         </p>
 

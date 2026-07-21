@@ -6,12 +6,12 @@ import {
   projectSelected,
   projectsSelectors,
   selectSelectedProjectId,
-} from '../features/projects/projectSlice';
+} from '../features/projects/projectsSlice';
 
 import {
   useAppDispatch,
   useAppSelector,
-} from '../app/hook';
+} from '../app/hooks';
 
 interface SidebarProps {
   isOpen: boolean;
