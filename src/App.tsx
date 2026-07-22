@@ -6,6 +6,7 @@ import {
 
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
+import TaskBoard from './features/tasks/TaskBoard';
 
 import {
   useAppDispatch,
@@ -271,17 +272,23 @@ const isLoading =
           </section>
 
           <section className="board-section">
+
             <div className="board-toolbar">
+
               <div>
-                <h2>Task board</h2>
+                <h2>
+                  Task board
+                </h2>
 
                 <p>
-                  Organise and monitor work across each
-                  stage.
+                  Organise and monitor work across each stage.
                 </p>
+
               </div>
 
+
               <div className="board-toolbar-actions">
+
                 <button
                   type="button"
                   className="filter-button"
@@ -289,80 +296,23 @@ const isLoading =
                   Filter
                 </button>
 
+
                 <button
                   type="button"
                   className="filter-button"
                 >
                   Sort by
                 </button>
+
               </div>
+
+
             </div>
 
-            <div className="kanban-board">
-              <article className="kanban-column">
-                <header className="kanban-column-header">
-                  <div>
-                    <span className="status-marker status-marker--todo" />
-                    <h3>To do</h3>
-                  </div>
 
-                  <span className="column-count">0</span>
-                </header>
+            <TaskBoard />
 
-                <div className="empty-column">
-                  <span>＋</span>
-                  <p>Tasks will appear here</p>
-                </div>
-              </article>
 
-              <article className="kanban-column">
-                <header className="kanban-column-header">
-                  <div>
-                    <span className="status-marker status-marker--progress" />
-                    <h3>In progress</h3>
-                  </div>
-
-                  <span className="column-count">0</span>
-                </header>
-
-                <div className="empty-column">
-                  <span>＋</span>
-                  <p>Tasks will appear here</p>
-                </div>
-              </article>
-
-              <article className="kanban-column">
-                <header className="kanban-column-header">
-                  <div>
-                    <span className="status-marker status-marker--review" />
-                    <h3>Review</h3>
-                  </div>
-
-                  <span className="column-count">0</span>
-                </header>
-
-                <div className="empty-column">
-                  <span>＋</span>
-                  <p>Tasks will appear here</p>
-                </div>
-              </article>
-
-              <article className="kanban-column">
-                <header className="kanban-column-header">
-                  <div>
-                    <span className="status-marker status-marker--completed" />
-                    <h3>Completed</h3>
-                  </div>
-
-                  <span className="column-count">0</span>
-                </header>
-
-                <div className="empty-column">
-                  <span>＋</span>
-                  <p>Tasks will appear here</p>
-                </div>
-              </article>
-            </div>
           </section>
         </main>
       </div>

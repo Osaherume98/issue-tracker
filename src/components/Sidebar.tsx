@@ -174,7 +174,7 @@ function Sidebar({
           <div className="profile-avatar">AO</div>
 
           <div className="profile-details">
-            <strong>Amatip</strong>
+            <strong>Darum</strong>
             <span>Frontend Developer</span>
           </div>
 
