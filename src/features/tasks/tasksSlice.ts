@@ -1,8 +1,8 @@
 import {
   createAsyncThunk,
   createEntityAdapter,
+  createSelector,
   createSlice,
-  type PayloadAction,
 } from '@reduxjs/toolkit';
 
 import {
@@ -232,6 +232,7 @@ export const taskSelectors =
       state.tasks,
   );
 
+  
 
 
 export const selectTasksStatus =
@@ -254,67 +255,66 @@ export const selectTasksError =
 
 
 
-export const selectTasksByStatus =
-(
-  status: TaskStatus,
-) =>
-(
-  state: RootState,
-): Task[] =>
-{
-  return taskSelectors
-    .selectAll(state)
-    .filter(
-      (
-        task,
-      ) =>
-        task.status === status,
+export const selectVisibleTasks = createSelector(
+  [
+    taskSelectors.selectAll,
+    (state: RootState) =>
+      state.projects.selectedProjectId,
+  ],
+  (tasks, selectedProjectId): Task[] => {
+    if (!selectedProjectId) {
+      return tasks;
+    }
+
+    return tasks.filter(
+      (task) =>
+        task.projectId === selectedProjectId,
     );
-};
+  },
+);
 
-
+export const selectVisibleTasksByStatus =
+  createSelector(
+    [
+      selectVisibleTasks,
+      (
+        _state: RootState,
+        status: TaskStatus,
+      ) => status,
+    ],
+    (tasks, status): Task[] => {
+      return tasks.filter(
+        (task) => task.status === status,
+      );
+    },
+  );
 
 export const selectTaskStatistics =
-(
-  state: RootState,
-) => {
+  createSelector(
+    [selectVisibleTasks],
+    (tasks) => {
+      return {
+        total: tasks.length,
 
-  const tasks =
-    taskSelectors.selectAll(
-      state,
-    );
+        todo: tasks.filter(
+          (task) => task.status === 'todo',
+        ).length,
 
+        inProgress: tasks.filter(
+          (task) =>
+            task.status === 'in-progress',
+        ).length,
 
-  return {
-    total:
-      tasks.length,
+        review: tasks.filter(
+          (task) => task.status === 'review',
+        ).length,
 
-    todo:
-      tasks.filter(
-        task =>
-          task.status === 'todo',
-      ).length,
-
-    inProgress:
-      tasks.filter(
-        task =>
-          task.status === 'in-progress',
-      ).length,
-
-    review:
-      tasks.filter(
-        task =>
-          task.status === 'review',
-      ).length,
-
-    completed:
-      tasks.filter(
-        task =>
-          task.status === 'completed',
-      ).length,
-  };
-};
-
-
+        completed: tasks.filter(
+          (task) =>
+            task.status === 'completed',
+        ).length,
+      };
+    },
+  );
 
 export default tasksSlice.reducer;

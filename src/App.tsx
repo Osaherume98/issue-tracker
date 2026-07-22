@@ -4,6 +4,13 @@ import {
   useState,
 } from 'react';
 
+import {
+  createAsyncThunk,
+  createEntityAdapter,
+  createSelector,
+  createSlice,
+} from '@reduxjs/toolkit';
+
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import TaskBoard from './features/tasks/TaskBoard';
@@ -33,6 +40,7 @@ import {
 
 import {
   fetchTasks,
+  selectTaskStatistics,
   selectTasksError,
   selectTasksStatus,
 } from './features/tasks/tasksSlice';
@@ -75,6 +83,10 @@ function App() {
 
     const tasksError = useAppSelector(
     selectTasksError,
+  );
+
+  const taskStatistics = useAppSelector(
+    selectTaskStatistics,
   );
 
   const selectedProject = useAppSelector(
@@ -214,17 +226,17 @@ const isLoading =
           <section className="statistics-grid">
             <article className="statistic-card">
               <div className="statistic-card-header">
-                <span>Total projects</span>
+                <span>Total task</span>
                 <div className="statistic-icon">▦</div>
               </div>
 
-              <strong>{projects.length}</strong>
+              <strong>{taskStatistics.total}</strong>
 
               <p>
                 <span className="positive-change">
-                  Active
+                  {taskStatistics.todo}
                 </span>{' '}
-                across the workspace
+                waiting to be started
               </p>
             </article>
 
@@ -250,10 +262,16 @@ const isLoading =
                 <div className="statistic-icon">◷</div>
               </div>
 
-              <strong>0</strong>
+              <strong>
+                {taskStatistics.inProgress}
+              </strong>
 
               <p>
-                Task data will be connected next
+                {taskStatistics.review} task
+                {taskStatistics.review === 1
+                  ? ''
+                  : 's'}{' '}
+                currently under review
               </p>
             </article>
 
@@ -263,10 +281,17 @@ const isLoading =
                 <div className="statistic-icon">✓</div>
               </div>
 
-              <strong>0</strong>
+              <strong>
+                {taskStatistics.completed}
+              </strong>
 
               <p>
-                Calculated from Redux selectors
+                {taskStatistics.total === 0
+                  ? 'No tasks in the selected project'
+                  : `${Math.round(
+                      (taskStatistics.completed /
+                        taskStatistics.total) * 100
+                    )}% completion rate`}
               </p>
             </article>
           </section>
@@ -281,9 +306,9 @@ const isLoading =
                 </h2>
 
                 <p>
-                  Organise and monitor work across each stage.
+                  {taskStatistics.total} task
+                  {taskStatistics.total === 1 ? '' : 's'}{' '}
                 </p>
-
               </div>
 
 
