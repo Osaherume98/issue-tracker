@@ -4,16 +4,10 @@ import {
   useState,
 } from 'react';
 
-import {
-  createAsyncThunk,
-  createEntityAdapter,
-  createSelector,
-  createSlice,
-} from '@reduxjs/toolkit';
-
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import TaskBoard from './features/tasks/TaskBoard';
+import TaskFormModal from './features/tasks/TaskFormModal';
 
 import {
   useAppDispatch,
@@ -40,9 +34,11 @@ import {
 
 import {
   fetchTasks,
+  selectTaskMutationError,
   selectTaskStatistics,
   selectTasksError,
   selectTasksStatus,
+  taskMutationErrorCleared
 } from './features/tasks/tasksSlice';
 
 function App() {
@@ -52,6 +48,9 @@ function App() {
 
   const [sidebarOpen, setSidebarOpen] =
     useState(false);
+
+  const [taskModalOpen, setTaskModalOpen] =
+    useState(false); 
 
   const projects = useAppSelector(
     projectsSelectors.selectAll,
@@ -95,6 +94,10 @@ function App() {
 
   const selectedProjectId = useAppSelector(
     selectSelectedProjectId,
+  );
+
+  const taskMutationError = useAppSelector(
+    selectTaskMutationError
   );
 
 useEffect(() => {
@@ -180,12 +183,34 @@ const isLoading =
 
       <div className="application-content">
         <Header
-          onOpenSidebar={() =>
-            setSidebarOpen(true)
-          }
-        />
+        onOpenSidebar={() =>
+          setSidebarOpen(true)
+        }
+        onCreateTask={() =>
+          setTaskModalOpen(true)
+        }
+      />
 
         <main className="dashboard">
+          {taskMutationError && (
+            <div
+              className="mutation-error"
+              role="alert"
+            >
+              <span>{taskMutationError}</span>
+
+              <button
+                type="button"
+                onClick={() =>
+                  dispatch(taskMutationErrorCleared())
+                }
+                aria-label="Dismiss task error"
+              >
+                ×
+              </button>
+            </div>
+        )}
+
           <section className="dashboard-heading">
             <div>
               <p className="page-eyebrow">
@@ -216,6 +241,9 @@ const isLoading =
               <button
                 type="button"
                 className="primary-button"
+                onClick={() =>
+                  setTaskModalOpen(true)
+                }
               >
                 <span>+</span>
                 New task
@@ -341,6 +369,12 @@ const isLoading =
           </section>
         </main>
       </div>
+
+      <TaskFormModal
+        isOpen={taskModalOpen}
+        onClose={() => setTaskModalOpen(false)}
+      />
+
     </div>
   );
 }

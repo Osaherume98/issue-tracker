@@ -5,6 +5,7 @@ import {
 } from '../data/mockData';
 
 import type {
+  CreateTaskInput,
   Employee,
   Project,
   Task,
@@ -22,6 +23,19 @@ const wait = (
 
 const cloneData = <T>(data: T): T => {
   return structuredClone(data);
+};
+
+const generateId = (): string => {
+  if (
+    typeof crypto !== 'undefined' &&
+    typeof crypto.randomUUID === 'function'
+  ) {
+    return crypto.randomUUID();
+  }
+
+  return `task-${Date.now()}-${Math.random()
+    .toString(16)
+    .slice(2)}`;
 };
 
 export const mockApi = {
@@ -43,6 +57,32 @@ export const mockApi = {
     return cloneData(mockTasks);
   },
 
+  async createTask(
+    input: CreateTaskInput,
+  ): Promise<Task> {
+    await wait(700);
+
+    const now = new Date().toISOString();
+
+    const newTask: Task = {
+      id: generateId(),
+      projectId: input.projectId,
+      title: input.title.trim(),
+      description: input.description.trim(),
+      status: input.status,
+      priority: input.priority,
+      assignedEmployeeIds:
+        input.assignedEmployeeIds,
+      dueDate: input.dueDate,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    mockTasks.unshift(newTask);
+
+    return cloneData(newTask);
+  },
+
   async updateTaskStatus(
     taskId: string,
     status: Task['status'],
@@ -54,7 +94,7 @@ export const mockApi = {
     );
 
     if (!task) {
-      throw new Error('Task not found');
+      throw new Error('Task not found.');
     }
 
     task.status = status;
@@ -67,6 +107,16 @@ export const mockApi = {
     taskId: string,
   ): Promise<string> {
     await wait(500);
+
+    const taskIndex = mockTasks.findIndex(
+      (task) => task.id === taskId,
+    );
+
+    if (taskIndex === -1) {
+      throw new Error('Task not found.');
+    }
+
+    mockTasks.splice(taskIndex, 1);
 
     return taskId;
   },

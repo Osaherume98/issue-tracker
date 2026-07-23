@@ -1,9 +1,11 @@
 interface HeaderProps {
   onOpenSidebar: () => void;
+  onCreateTask: () => void;
 }
 
 function Header({
   onOpenSidebar,
+  onCreateTask,
 }: HeaderProps) {
   return (
     <header className="topbar">
@@ -35,12 +37,16 @@ function Header({
           aria-label="View notifications"
         >
           ♢
-          <span className="icon-button-badge">3</span>
+
+          <span className="icon-button-badge">
+            3
+          </span>
         </button>
 
         <button
           type="button"
           className="create-task-button"
+          onClick={onCreateTask}
         >
           <span>+</span>
           Create task
