@@ -3,27 +3,19 @@ import type { Employee, Project, Task } from '../types';
 export const mockProjects: Project[] = [
   {
     id: 'project-1',
-    name: 'Customer Portal',
+    name: 'CML',
     description:
       'Build a new customer-facing portal for account and service management.',
-    color: '#4f46e5',
+    color: '#FA0007',
     createdAt: '2026-07-01T09:00:00.000Z',
   },
   {
     id: 'project-2',
-    name: 'Mobile Banking App',
+    name: 'LogiRate',
     description:
-      'Improve onboarding, payments and transaction monitoring.',
-    color: '#0891b2',
+      'Rating SystemBuilt for Businesses',
+    color: '#3C80FF',
     createdAt: '2026-07-03T10:30:00.000Z',
-  },
-  {
-    id: 'project-3',
-    name: 'Internal Analytics',
-    description:
-      'Create dashboards for operational and product performance.',
-    color: '#9333ea',
-    createdAt: '2026-07-05T08:15:00.000Z',
   },
 ];
 

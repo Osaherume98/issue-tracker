@@ -468,24 +468,87 @@ export const selectVisibleTasks =
   createSelector(
     [
       taskSelectors.selectAll,
+
       (state: RootState) =>
         state.projects.selectedProjectId,
+
+      (state: RootState) =>
+        state.filters.searchTerm,
+
+      (state: RootState) =>
+        state.filters.employeeId,
+
+      (state: RootState) =>
+        state.filters.priority,
+
+      (state: RootState) =>
+        state.filters.overdueOnly,
     ],
+
     (
       tasks,
       selectedProjectId,
+      searchTerm,
+      employeeId,
+      priority,
+      overdueOnly,
     ): Task[] => {
-      if (!selectedProjectId) {
-        return tasks;
-      }
+      const normalisedSearchTerm =
+        searchTerm.trim().toLowerCase();
 
-      return tasks.filter(
-        (task) =>
+      const today = new Date();
+
+      today.setHours(0, 0, 0, 0);
+
+      return tasks.filter((task) => {
+        const matchesProject =
+          !selectedProjectId ||
           task.projectId ===
-          selectedProjectId,
-      );
+            selectedProjectId;
+
+        const matchesSearch =
+          normalisedSearchTerm === '' ||
+          task.title
+            .toLowerCase()
+            .includes(normalisedSearchTerm) ||
+          task.description
+            .toLowerCase()
+            .includes(normalisedSearchTerm);
+
+        const matchesEmployee =
+          employeeId === 'all' ||
+          task.assignedEmployeeIds.includes(
+            employeeId,
+          );
+
+        const matchesPriority =
+          priority === 'all' ||
+          task.priority === priority;
+
+        const taskDueDate = new Date(
+          `${task.dueDate}T00:00:00`,
+        );
+
+        const isOverdue =
+          taskDueDate < today &&
+          task.status !== 'completed';
+
+        const matchesOverdue =
+          !overdueOnly || isOverdue;
+
+        return (
+          matchesProject &&
+          matchesSearch &&
+          matchesEmployee &&
+          matchesPriority &&
+          matchesOverdue
+        );
+      });
     },
   );
+
+  
+
 
 export const selectVisibleTasksByStatus =
   createSelector(
@@ -507,36 +570,47 @@ export const selectVisibleTasksByStatus =
     },
   );
 
-export const selectTaskStatistics =
-  createSelector(
-    [selectVisibleTasks],
-    (tasks) => {
-      return {
-        total: tasks.length,
+export const selectTaskStatistics = createSelector(
+  [selectVisibleTasks],
+  (tasks) => {
+    const today = new Date();
 
-        todo: tasks.filter(
-          (task) =>
-            task.status === 'todo',
-        ).length,
+    today.setHours(0, 0, 0, 0);
 
-        inProgress: tasks.filter(
-          (task) =>
-            task.status ===
-            'in-progress',
-        ).length,
+    const overdue = tasks.filter((task) => {
+      const dueDate = new Date(
+        `${task.dueDate}T00:00:00`,
+      );
 
-        review: tasks.filter(
-          (task) =>
-            task.status === 'review',
-        ).length,
+      return (
+        dueDate < today &&
+        task.status !== 'completed'
+      );
+    }).length;
 
-        completed: tasks.filter(
-          (task) =>
-            task.status ===
-            'completed',
-        ).length,
-      };
-    },
-  );
+    return {
+      total: tasks.length,
 
+      todo: tasks.filter(
+        (task) => task.status === 'todo',
+      ).length,
+
+      inProgress: tasks.filter(
+        (task) =>
+          task.status === 'in-progress',
+      ).length,
+
+      review: tasks.filter(
+        (task) => task.status === 'review',
+      ).length,
+
+      completed: tasks.filter(
+        (task) =>
+          task.status === 'completed',
+      ).length,
+
+      overdue,
+    };
+  },
+);
 export default tasksSlice.reducer;

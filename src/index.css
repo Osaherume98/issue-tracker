@@ -1372,3 +1372,218 @@ input {
   cursor: not-allowed;
   opacity: 0.55;
 }
+
+.search-clear-button {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  place-items: center;
+  background-color: transparent;
+  border-radius: 6px;
+  color: #667085;
+  font-size: 1rem;
+}
+
+.search-clear-button:hover {
+  background-color: #e9edf3;
+  color: #344054;
+}
+
+.filter-button {
+  position: relative;
+}
+
+.filter-button--active {
+  background-color: #eef2ff;
+  border-color: #a5b4fc;
+  color: #4338ca;
+}
+
+.active-filter-dot {
+  width: 7px;
+  height: 7px;
+  margin-left: 8px;
+  background-color: #4f46e5;
+  border-radius: 50%;
+}
+
+.filter-panel-overlay {
+  position: fixed;
+  z-index: 79;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.32);
+}
+
+.filter-panel {
+  position: fixed;
+  z-index: 80;
+  top: 90px;
+  right: 30px;
+  width: min(380px, calc(100% - 32px));
+  background-color: #ffffff;
+  border: 1px solid #e4e7ec;
+  border-radius: 16px;
+  box-shadow:
+    0 24px 70px
+    rgba(15, 23, 42, 0.22);
+}
+
+.filter-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px;
+  border-bottom: 1px solid #eaecf0;
+}
+
+.filter-panel-header h3 {
+  color: #101828;
+  font-size: 1rem;
+}
+
+.filter-panel-header p {
+  margin-top: 5px;
+  color: #667085;
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.filter-close-button {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  place-items: center;
+  background-color: #f8fafc;
+  border: 1px solid #e4e7ec;
+  border-radius: 8px;
+  color: #667085;
+  font-size: 1.15rem;
+}
+
+.filter-panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 20px;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.filter-field > span {
+  color: #344054;
+  font-size: 0.74rem;
+  font-weight: 650;
+}
+
+.filter-field select {
+  width: 100%;
+  padding: 10px 11px;
+  background-color: #ffffff;
+  border: 1px solid #d0d5dd;
+  border-radius: 9px;
+  color: #344054;
+  outline: none;
+}
+
+.filter-field select:focus {
+  border-color: #818cf8;
+  box-shadow:
+    0 0 0 3px
+    rgba(99, 102, 241, 0.12);
+}
+
+.overdue-filter {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 13px;
+  background-color: #f9fafb;
+  border: 1px solid #e4e7ec;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.overdue-filter input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.filter-checkbox {
+  display: grid;
+  width: 21px;
+  height: 21px;
+  flex: 0 0 21px;
+  place-items: center;
+  background-color: #ffffff;
+  border: 1px solid #cfd4dc;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.overdue-filter input:checked
+  + .filter-checkbox {
+  background-color: #4f46e5;
+  border-color: #4f46e5;
+}
+
+.overdue-filter > span:last-child {
+  display: flex;
+  flex-direction: column;
+}
+
+.overdue-filter strong {
+  color: #344054;
+  font-size: 0.74rem;
+}
+
+.overdue-filter small {
+  margin-top: 4px;
+  color: #667085;
+  font-size: 0.66rem;
+  line-height: 1.45;
+}
+
+.filter-panel-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  padding: 16px 20px 20px;
+  border-top: 1px solid #eaecf0;
+}
+
+.filter-panel-footer button {
+  min-height: 39px;
+}
+
+.filter-panel-footer
+  .secondary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+@media (max-width: 650px) {
+  .filter-panel {
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    border-radius: 18px 18px 0 0;
+  }
+
+  .filter-panel-footer button {
+    flex: 1;
+  }
+}

@@ -1,3 +1,20 @@
+import {
+  useEffect,
+  useRef,
+  type ChangeEvent,
+  type KeyboardEvent,
+} from 'react';
+
+import {
+  useAppDispatch,
+  useAppSelector,
+} from '../app/hooks';
+
+import {
+  searchTermChanged,
+  selectSearchTerm,
+} from '../features/filters/filtersSlice';
+
 interface HeaderProps {
   onOpenSidebar: () => void;
   onCreateTask: () => void;
@@ -7,6 +24,67 @@ function Header({
   onOpenSidebar,
   onCreateTask,
 }: HeaderProps) {
+  const dispatch = useAppDispatch();
+
+  const searchTerm = useAppSelector(
+    selectSearchTerm,
+  );
+
+  const searchInputRef =
+    useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handleKeyboardShortcut = (
+      event: globalThis.KeyboardEvent,
+    ): void => {
+      const isSearchShortcut =
+        (event.ctrlKey || event.metaKey) &&
+        event.key.toLowerCase() === 'k';
+
+      if (!isSearchShortcut) {
+        return;
+      }
+
+      event.preventDefault();
+
+      searchInputRef.current?.focus();
+    };
+
+    window.addEventListener(
+      'keydown',
+      handleKeyboardShortcut,
+    );
+
+    return () => {
+      window.removeEventListener(
+        'keydown',
+        handleKeyboardShortcut,
+      );
+    };
+  }, []);
+
+  const handleSearchChange = (
+    event: ChangeEvent<HTMLInputElement>,
+  ): void => {
+    dispatch(
+      searchTermChanged(
+        event.target.value,
+      ),
+    );
+  };
+
+  const handleSearchKeyDown = (
+    event: KeyboardEvent<HTMLInputElement>,
+  ): void => {
+    if (event.key !== 'Escape') {
+      return;
+    }
+
+    dispatch(searchTermChanged(''));
+
+    event.currentTarget.blur();
+  };
+
   return (
     <header className="topbar">
       <button
@@ -19,15 +97,36 @@ function Header({
       </button>
 
       <label className="global-search">
-        <span aria-hidden="true">⌕</span>
+        <span aria-hidden="true">
+          ⌕
+        </span>
 
         <input
+          ref={searchInputRef}
           type="search"
-          placeholder="Search tasks, projects or team members"
-          aria-label="Search"
+          value={searchTerm}
+          onChange={handleSearchChange}
+          onKeyDown={handleSearchKeyDown}
+          placeholder="Search tasks by title or description"
+          aria-label="Search tasks"
         />
 
-        <kbd>Ctrl K</kbd>
+        {searchTerm ? (
+          <button
+            type="button"
+            className="search-clear-button"
+            onClick={() =>
+              dispatch(
+                searchTermChanged(''),
+              )
+            }
+            aria-label="Clear task search"
+          >
+            ×
+          </button>
+        ) : (
+          <kbd>Ctrl K</kbd>
+        )}
       </label>
 
       <div className="topbar-actions">

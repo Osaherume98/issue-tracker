@@ -8,6 +8,7 @@ import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import TaskBoard from './features/tasks/TaskBoard';
 import TaskFormModal from './features/tasks/TaskFormModal';
+import TaskFilters from './features/filters/TaskFilters';
 import type { Task } from './types';
 
 import {
@@ -22,10 +23,12 @@ import {
   selectEmployeesStatus,
 } from './features/employees/employeesSlice';
 
+import {
+  selectHasActiveFilters,
+} from './features/filters/filtersSlice';
 
 import {
   fetchProjects,
-  projectsSelectors,
   selectProjectsError,
   selectProjectsStatus,
   selectSelectedProject,
@@ -99,6 +102,14 @@ function App() {
   const taskMutationError = useAppSelector(
     selectTaskMutationError
   );
+
+  const [filtersOpen, setFiltersOpen] =
+    useState(false);
+
+  const hasActiveFilters =
+    useAppSelector(
+    selectHasActiveFilters,
+   );
 
 useEffect(() => {
   if (hasInitialised.current) {
@@ -308,11 +319,11 @@ const isLoading =
               </strong>
 
               <p>
-                {taskStatistics.review} task
-                {taskStatistics.review === 1
+                {taskStatistics.overdue} overduetask
+                {taskStatistics.overdue === 1
                   ? ''
                   : 's'}{' '}
-                currently under review
+                need attention
               </p>
             </article>
 
@@ -327,12 +338,11 @@ const isLoading =
               </strong>
 
               <p>
-                {taskStatistics.total === 0
-                  ? 'No tasks in the selected project'
-                  : `${Math.round(
-                      (taskStatistics.completed /
-                        taskStatistics.total) * 100
-                    )}% completion rate`}
+                {taskStatistics.total} matching task
+                {taskStatistics.total === 1
+                  ? ''
+                  : 's'}{' '}
+                  across the selected workspace
               </p>
             </article>
           </section>
@@ -355,12 +365,19 @@ const isLoading =
 
               <div className="board-toolbar-actions">
 
-                <button
-                  type="button"
-                  className="filter-button"
-                >
-                  Filter
-                </button>
+              <button
+                type="button"
+                className={`filter-button ${
+                  hasActiveFilters ? 'filter-button--active' : ''
+                }`}
+                onClick={() => setFiltersOpen(true)}
+              >
+                Filter
+
+                {hasActiveFilters && (
+                  <span className="active-filter-dot" />
+                )}
+              </button>
 
 
                 <button
@@ -384,6 +401,11 @@ const isLoading =
           </section>
         </main>
       </div>
+
+      <TaskFilters
+        isOpen={filtersOpen}
+        onClose={() => setFiltersOpen(false)}
+      />
 
       <TaskFormModal
         isOpen={taskModalOpen}
