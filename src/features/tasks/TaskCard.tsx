@@ -23,6 +23,7 @@ import {
 
 interface TaskCardProps {
   task: Task;
+  onEdit: () => void;
 }
 
 const taskStatusOptions: Array<{
@@ -57,8 +58,12 @@ const formatDueDate = (dueDate: string): string => {
   }).format(date);
 };
 
-function TaskCard({ task }: TaskCardProps) {
+function TaskCard({
+  task,
+  onEdit,
+}: TaskCardProps) {
   const dispatch = useAppDispatch();
+
 
   const employees = useAppSelector(
     employeesSelectors.selectAll,
@@ -180,29 +185,39 @@ function TaskCard({ task }: TaskCardProps) {
           )}
         </div>
 
-        <div className="task-card-actions">
-          {isUpdating && (
+      <div className="task-card-actions">
+        {isUpdating && (
             <span className="task-operation-text">
-              Moving...
+            Updating...
             </span>
-          )}
+        )}
 
-          {isDeleting && (
+        {isDeleting && (
             <span className="task-operation-text">
-              Deleting...
+            Deleting...
             </span>
-          )}
+        )}
 
-          <button
+        <button
+            type="button"
+            className="task-edit-button"
+            onClick={onEdit}
+            disabled={isBusy}
+            aria-label={`Edit ${task.title}`}
+        >
+            Edit
+        </button>
+
+        <button
             type="button"
             className="task-delete-button"
             onClick={handleDelete}
             disabled={isBusy}
             aria-label={`Delete ${task.title}`}
-          >
+        >
             Delete
-          </button>
-        </div>
+        </button>
+      </div>
       </div>
     </article>
   );

@@ -1,12 +1,20 @@
 import { useAppSelector } from '../../app/hooks';
 
+import type { Task } from '../../types';
+
 import {
   selectVisibleTasksByStatus,
 } from './tasksSlice';
 
-import TaskColumn from './TaskColoumn';
+import TaskColumn from './TaskColumn';
 
-function TaskBoard() {
+interface TaskBoardProps {
+  onEditTask: (task: Task) => void;
+}
+
+function TaskBoard({
+  onEditTask,
+}: TaskBoardProps) {
   const todoTasks = useAppSelector((state) =>
     selectVisibleTasksByStatus(
       state,
@@ -45,6 +53,7 @@ function TaskBoard() {
         status="todo"
         tasks={todoTasks}
         colorClass="status-marker--todo"
+        onEditTask={onEditTask}
       />
 
       <TaskColumn
@@ -52,6 +61,7 @@ function TaskBoard() {
         status="in-progress"
         tasks={progressTasks}
         colorClass="status-marker--progress"
+        onEditTask={onEditTask}
       />
 
       <TaskColumn
@@ -59,6 +69,7 @@ function TaskBoard() {
         status="review"
         tasks={reviewTasks}
         colorClass="status-marker--review"
+        onEditTask={onEditTask}
       />
 
       <TaskColumn
@@ -66,6 +77,7 @@ function TaskBoard() {
         status="completed"
         tasks={completedTasks}
         colorClass="status-marker--completed"
+        onEditTask={onEditTask}
       />
     </div>
   );

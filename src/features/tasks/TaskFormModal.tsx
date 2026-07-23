@@ -14,6 +14,7 @@ import type {
   CreateTaskInput,
   TaskPriority,
   TaskStatus,
+  UpdateTaskInput,
 } from '../../types';
 
 import {
@@ -28,12 +29,17 @@ import {
 import {
   createTask,
   selectTaskCreateStatus,
+  selectTaskUpdateStatus,
   taskCreateStatusReset,
   taskMutationErrorCleared,
+  taskSelectors,
+  taskUpdateStatusReset,
+  updateTask,
 } from './tasksSlice';
 
 interface TaskFormModalProps {
   isOpen: boolean;
+  editingTaskId: string | null;
   onClose: () => void;
 }
 
@@ -56,6 +62,7 @@ const initialFormState: CreateTaskInput = {
 
 function TaskFormModal({
   isOpen,
+  editingTaskId,
   onClose,
 }: TaskFormModalProps) {
   const dispatch = useAppDispatch();
@@ -72,8 +79,21 @@ function TaskFormModal({
     selectSelectedProjectId,
   );
 
+  const editingTask = useAppSelector((state) =>
+    editingTaskId
+      ? taskSelectors.selectById(
+          state,
+          editingTaskId,
+        )
+      : undefined,
+  );
+
   const createStatus = useAppSelector(
     selectTaskCreateStatus,
+  );
+
+  const updateStatus = useAppSelector(
+    selectTaskUpdateStatus,
   );
 
   const [formData, setFormData] =
@@ -84,8 +104,12 @@ function TaskFormModal({
   const [errors, setErrors] =
     useState<FormErrors>({});
 
+  const isEditing =
+    editingTaskId !== null;
+
   const isSubmitting =
-    createStatus === 'loading';
+    createStatus === 'loading' ||
+    updateStatus === 'loading';
 
   useEffect(() => {
     if (!isOpen) {
@@ -94,8 +118,25 @@ function TaskFormModal({
 
     dispatch(taskMutationErrorCleared());
     dispatch(taskCreateStatusReset());
+    dispatch(taskUpdateStatusReset());
 
     setErrors({});
+
+    if (editingTask) {
+      setFormData({
+        projectId: editingTask.projectId,
+        title: editingTask.title,
+        description: editingTask.description,
+        status: editingTask.status,
+        priority: editingTask.priority,
+        assignedEmployeeIds: [
+          ...editingTask.assignedEmployeeIds,
+        ],
+        dueDate: editingTask.dueDate,
+      });
+
+      return;
+    }
 
     setFormData({
       ...initialFormState,
@@ -106,24 +147,31 @@ function TaskFormModal({
     });
   }, [
     dispatch,
+    editingTask,
     isOpen,
     projects,
     selectedProjectId,
   ]);
 
   useEffect(() => {
-    if (
-      isOpen &&
-      createStatus === 'succeeded'
-    ) {
-      onClose();
-      dispatch(taskCreateStatusReset());
+    const operationSucceeded =
+      createStatus === 'succeeded' ||
+      updateStatus === 'succeeded';
+
+    if (!isOpen || !operationSucceeded) {
+      return;
     }
+
+    onClose();
+
+    dispatch(taskCreateStatusReset());
+    dispatch(taskUpdateStatusReset());
   }, [
     createStatus,
     dispatch,
     isOpen,
     onClose,
+    updateStatus,
   ]);
 
   useEffect(() => {
@@ -171,13 +219,14 @@ function TaskFormModal({
   const validateForm = (): boolean => {
     const nextErrors: FormErrors = {};
 
-    if (!formData.title.trim()) {
+    const trimmedTitle =
+      formData.title.trim();
+
+    if (!trimmedTitle) {
       nextErrors.title =
         'Task title is required.';
-    }
-
-    if (
-      formData.title.trim().length > 100
+    } else if (
+      trimmedTitle.length > 100
     ) {
       nextErrors.title =
         'Task title must not exceed 100 characters.';
@@ -263,14 +312,28 @@ function TaskFormModal({
       return;
     }
 
-    void dispatch(
-      createTask({
-        ...formData,
-        title: formData.title.trim(),
-        description:
-          formData.description.trim(),
-      }),
-    );
+    const cleanedInput: CreateTaskInput = {
+      ...formData,
+      title: formData.title.trim(),
+      description:
+        formData.description.trim(),
+      assignedEmployeeIds: [
+        ...formData.assignedEmployeeIds,
+      ],
+    };
+
+    if (isEditing && editingTaskId) {
+      const updateInput: UpdateTaskInput = {
+        id: editingTaskId,
+        ...cleanedInput,
+      };
+
+      void dispatch(updateTask(updateInput));
+
+      return;
+    }
+
+    void dispatch(createTask(cleanedInput));
   };
 
   const handleClose = (): void => {
@@ -291,7 +354,7 @@ function TaskFormModal({
         className="task-modal"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="create-task-title"
+        aria-labelledby="task-form-title"
         onMouseDown={(event) =>
           event.stopPropagation()
         }
@@ -299,17 +362,21 @@ function TaskFormModal({
         <header className="task-modal-header">
           <div>
             <p className="task-modal-eyebrow">
-              New work item
+              {isEditing
+                ? 'Update work item'
+                : 'New work item'}
             </p>
 
-            <h2 id="create-task-title">
-              Create task
+            <h2 id="task-form-title">
+              {isEditing
+                ? 'Edit task'
+                : 'Create task'}
             </h2>
 
             <p>
-              Add a task and assign it to
-              the right project and team
-              members.
+              {isEditing
+                ? 'Update the task details, assignment and workflow status.'
+                : 'Add a task and assign it to the right project and team members.'}
             </p>
           </div>
 
@@ -318,7 +385,7 @@ function TaskFormModal({
             className="modal-close-button"
             onClick={handleClose}
             disabled={isSubmitting}
-            aria-label="Close create task form"
+            aria-label="Close task form"
           >
             ×
           </button>
@@ -595,8 +662,12 @@ function TaskFormModal({
               disabled={isSubmitting}
             >
               {isSubmitting
-                ? 'Creating task...'
-                : 'Create task'}
+                ? isEditing
+                  ? 'Saving changes...'
+                  : 'Creating task...'
+                : isEditing
+                  ? 'Save changes'
+                  : 'Create task'}
             </button>
           </footer>
         </form>

@@ -174,7 +174,7 @@ function Sidebar({
           <div className="profile-avatar">AO</div>
 
           <div className="profile-details">
-            <strong>Darum</strong>
+            <strong>DARUM NG</strong>
             <span>Frontend Developer</span>
           </div>
 

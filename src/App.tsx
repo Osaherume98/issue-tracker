@@ -8,6 +8,7 @@ import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import TaskBoard from './features/tasks/TaskBoard';
 import TaskFormModal from './features/tasks/TaskFormModal';
+import type { Task } from './types';
 
 import {
   useAppDispatch,
@@ -50,11 +51,10 @@ function App() {
     useState(false);
 
   const [taskModalOpen, setTaskModalOpen] =
-    useState(false); 
+    useState(false);
 
-  const projects = useAppSelector(
-    projectsSelectors.selectAll,
-  );
+  const [editingTaskId, setEditingTaskId] =
+    useState<string | null>(null);
 
   const employees = useAppSelector(
     employeesSelectors.selectAll,
@@ -134,6 +134,23 @@ const isLoading =
     void dispatch(fetchTasks());
   };
 
+  const handleCreateTask = (): void => {
+    setEditingTaskId(null);
+    setTaskModalOpen(true);
+  };
+
+  const handleEditTask = (
+    task: Task,
+  ): void => {
+    setEditingTaskId(task.id);
+    setTaskModalOpen(true);
+  };
+
+  const handleCloseTaskModal = (): void => {
+    setTaskModalOpen(false);
+    setEditingTaskId(null);
+  };
+
   if (isLoading) {
     return (
       <main className="full-page-state">
@@ -183,13 +200,11 @@ const isLoading =
 
       <div className="application-content">
         <Header
-        onOpenSidebar={() =>
-          setSidebarOpen(true)
-        }
-        onCreateTask={() =>
-          setTaskModalOpen(true)
-        }
-      />
+          onOpenSidebar={() =>
+            setSidebarOpen(true)
+          }
+          onCreateTask={handleCreateTask}
+        />
 
         <main className="dashboard">
           {taskMutationError && (
@@ -241,9 +256,7 @@ const isLoading =
               <button
                 type="button"
                 className="primary-button"
-                onClick={() =>
-                  setTaskModalOpen(true)
-                }
+                onClick={handleCreateTask}
               >
                 <span>+</span>
                 New task
@@ -363,7 +376,9 @@ const isLoading =
             </div>
 
 
-            <TaskBoard />
+            <TaskBoard
+              onEditTask={handleEditTask}
+            />
 
 
           </section>
@@ -372,7 +387,8 @@ const isLoading =
 
       <TaskFormModal
         isOpen={taskModalOpen}
-        onClose={() => setTaskModalOpen(false)}
+        editingTaskId={editingTaskId}
+        onClose={handleCloseTaskModal}
       />
 
     </div>

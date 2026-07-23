@@ -14,6 +14,7 @@ import type {
   RequestStatus,
   Task,
   TaskStatus,
+  UpdateTaskInput
 } from '../../types';
 
 interface TasksAdditionalState {
@@ -21,6 +22,7 @@ interface TasksAdditionalState {
   error: string | null;
   mutationError: string | null;
   createStatus: RequestStatus;
+  updateStatus: RequestStatus;
   updatingTaskIds: string[];
   deletingTaskIds: string[];
 }
@@ -47,6 +49,7 @@ const initialState =
     error: null,
     mutationError: null,
     createStatus: 'idle',
+    updateStatus: 'idle',
     updatingTaskIds: [],
     deletingTaskIds: [],
   });
@@ -89,6 +92,27 @@ export const createTask = createAsyncThunk<
         error instanceof Error
           ? error.message
           : 'Unable to create the task.';
+
+      return rejectWithValue(message);
+    }
+  },
+);
+export const updateTask = createAsyncThunk<
+  Task,
+  UpdateTaskInput,
+  {
+    rejectValue: string;
+  }
+>(
+  'tasks/updateTask',
+  async (input, { rejectWithValue }) => {
+    try {
+      return await mockApi.updateTask(input);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Unable to update the task.';
 
       return rejectWithValue(message);
     }
@@ -170,6 +194,10 @@ const tasksSlice = createSlice({
     taskCreateStatusReset: (state) => {
       state.createStatus = 'idle';
     },
+
+    taskUpdateStatusReset: (state) => {
+      state.updateStatus = 'idle';
+    },
   },
 
   extraReducers: (builder) => {
@@ -225,6 +253,48 @@ const tasksSlice = createSlice({
         state.mutationError =
           action.payload ??
           'An unexpected error occurred while creating the task.';
+      })
+
+      .addCase(updateTask.pending, (state, action) => {
+        state.updateStatus = 'loading';
+        state.mutationError = null;
+
+        const taskId = action.meta.arg.id;
+
+        if (!state.updatingTaskIds.includes(taskId)) {
+          state.updatingTaskIds.push(taskId);
+        }
+      })
+
+      .addCase(updateTask.fulfilled, (state, action) => {
+        state.updateStatus = 'succeeded';
+
+        tasksAdapter.upsertOne(
+          state,
+          action.payload,
+        );
+
+        state.updatingTaskIds =
+          removeIdFromArray(
+            state.updatingTaskIds,
+            action.payload.id,
+          );
+      })
+
+      .addCase(updateTask.rejected, (state, action) => {
+        state.updateStatus = 'failed';
+
+        const taskId = action.meta.arg.id;
+
+        state.updatingTaskIds =
+          removeIdFromArray(
+            state.updatingTaskIds,
+            taskId,
+          );
+
+        state.mutationError =
+          action.payload ??
+          'An unexpected error occurred while updating the task.';
       })
 
       .addCase(
@@ -337,12 +407,20 @@ const tasksSlice = createSlice({
 export const {
   taskMutationErrorCleared,
   taskCreateStatusReset,
+  taskUpdateStatusReset,
 } = tasksSlice.actions;
 
 export const taskSelectors =
   tasksAdapter.getSelectors<RootState>(
     (state) => state.tasks,
   );
+
+  export const selectTaskUpdateStatus = (
+  state: RootState,
+): RequestStatus => {
+  return state.tasks.updateStatus;
+};
+
 
 export const selectTasksStatus = (
   state: RootState,

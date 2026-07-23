@@ -1353,3 +1353,22 @@ input {
     min-width: 0;
   }
 }
+
+.task-edit-button {
+  padding: 6px 9px;
+  background-color: transparent;
+  border: 1px solid #c7d2fe;
+  border-radius: 7px;
+  color: #4338ca;
+  font-size: 0.68rem;
+  font-weight: 650;
+}
+
+.task-edit-button:hover:not(:disabled) {
+  background-color: #eef2ff;
+}
+
+.task-edit-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}

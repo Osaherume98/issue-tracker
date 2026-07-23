@@ -9,6 +9,7 @@ import type {
   Employee,
   Project,
   Task,
+  UpdateTaskInput
 } from '../types';
 
 const NETWORK_DELAY = 900;
@@ -82,6 +83,40 @@ export const mockApi = {
 
     return cloneData(newTask);
   },
+
+  async updateTask(
+  input: UpdateTaskInput,
+): Promise<Task> {
+  await wait(700);
+
+  const taskIndex = mockTasks.findIndex(
+    (task) => task.id === input.id,
+  );
+
+  if (taskIndex === -1) {
+    throw new Error('Task not found.');
+  }
+
+  const existingTask = mockTasks[taskIndex];
+
+  const updatedTask: Task = {
+    ...existingTask,
+    projectId: input.projectId,
+    title: input.title.trim(),
+    description: input.description.trim(),
+    status: input.status,
+    priority: input.priority,
+    assignedEmployeeIds: [
+      ...input.assignedEmployeeIds,
+    ],
+    dueDate: input.dueDate,
+    updatedAt: new Date().toISOString(),
+  };
+
+  mockTasks[taskIndex] = updatedTask;
+
+  return cloneData(updatedTask);
+},
 
   async updateTaskStatus(
     taskId: string,
