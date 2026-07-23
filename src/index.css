@@ -1792,3 +1792,25 @@ input {
   color: #98a2b3;
   font-size: 0.75rem;
 }
+
+.sidebar-reset-area {
+  padding: 14px 8px;
+  border-top: 1px solid #253044;
+}
+
+.reset-workspace-button {
+  width: 100%;
+  padding: 9px 11px;
+  background-color: transparent;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  color: #94a3b8;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.reset-workspace-button:hover {
+  background-color: #1f2937;
+  border-color: #4b5563;
+  color: #ffffff;
+}

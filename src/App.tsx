@@ -134,9 +134,10 @@ useEffect(() => {
 
   void dispatch(fetchEmployees());
 
-  void dispatch(fetchTasks());
-
-}, [dispatch]);
+  if (tasksStatus === 'idle') {
+    void dispatch(fetchTasks());
+  }
+}, [dispatch, tasksStatus]);
 
 const isLoading =
   projectsStatus === 'loading' ||

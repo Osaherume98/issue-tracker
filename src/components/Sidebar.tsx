@@ -8,6 +8,8 @@ import {
   selectSelectedProjectId,
 } from '../features/projects/projectsSlice';
 
+import ResetWorkspaceButton from '../components/ResetWorkspaceButton';
+
 import {
   useAppDispatch,
   useAppSelector,
@@ -170,6 +172,9 @@ function Sidebar({
           ))}
         </section>
 
+        <div className="sidebar-reset-area">
+            <ResetWorkspaceButton />
+        </div>
         <div className="sidebar-profile">
           <div className="profile-avatar">AO</div>
 

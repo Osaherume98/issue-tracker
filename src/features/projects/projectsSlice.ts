@@ -75,22 +75,45 @@ const projectsSlice = createSlice({
         state.status = 'loading';
         state.error = null;
       })
-      .addCase(
-        fetchProjects.fulfilled,
-        (state, action) => {
-          state.status = 'succeeded';
+.addCase(
+  fetchProjects.fulfilled,
+  (state, action) => {
+    state.status = 'succeeded';
 
-          projectsAdapter.setAll(state, action.payload);
+    projectsAdapter.setAll(
+      state,
+      action.payload,
+    );
 
-          if (
-            !state.selectedProjectId &&
-            action.payload.length > 0
-          ) {
-            state.selectedProjectId =
-              action.payload[0].id;
-          }
-        },
-      )
+    const selectedProjectExists =
+      state.selectedProjectId
+        ? action.payload.some(
+            (project) =>
+              project.id ===
+              state.selectedProjectId,
+          )
+        : false;
+
+    if (
+      state.selectedProjectId &&
+      !selectedProjectExists
+    ) {
+      state.selectedProjectId =
+        action.payload[0]?.id ?? null;
+
+      return;
+    }
+
+    if (
+      !state.selectedProjectId &&
+      action.payload.length > 0
+    ) {
+      state.selectedProjectId =
+        action.payload[0].id;
+    }
+  },
+)
+
       .addCase(fetchProjects.rejected, (state, action) => {
         state.status = 'failed';
         state.error =
