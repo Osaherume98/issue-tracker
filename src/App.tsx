@@ -13,6 +13,15 @@ import type { Task } from './types';
 
 import NotificationPanel from './features/notifications/NotificationPanel';
 
+import TeamMembersView from './features/team/TeamMembersView';
+
+import TaskBoardView from './features/tasks/TaskBoardView';
+
+import {
+  selectActiveView,
+  activeViewChanged,
+} from './features/ui/uiSlice';
+
 import {
   selectNotificationPanelOpen,
 } from './features/notifications/notificationsSlice';
@@ -29,9 +38,6 @@ import {
   selectEmployeesStatus,
 } from './features/employees/employeesSlice';
 
-import {
-  selectHasActiveFilters,
-} from './features/filters/filtersSlice';
 
 import {
   fetchProjects,
@@ -109,13 +115,12 @@ function App() {
     selectTaskMutationError
   );
 
+  const activeView = useAppSelector(
+  selectActiveView,
+);
+
   const [filtersOpen, setFiltersOpen] =
     useState(false);
-
-  const hasActiveFilters =
-    useAppSelector(
-    selectHasActiveFilters,
-   );
 
    const notificationPanelOpen =
     useAppSelector(
@@ -230,189 +235,203 @@ const isLoading =
           onCreateTask={handleCreateTask}
         />
 
-        <main className="dashboard">
-          {taskMutationError && (
-            <div
-              className="mutation-error"
-              role="alert"
-            >
-              <span>{taskMutationError}</span>
+<main className="dashboard">
+  {taskMutationError && (
+    <div
+      className="mutation-error"
+      role="alert"
+    >
+      <span>
+        {taskMutationError}
+      </span>
 
-              <button
-                type="button"
-                onClick={() =>
-                  dispatch(taskMutationErrorCleared())
-                }
-                aria-label="Dismiss task error"
-              >
-                ×
-              </button>
+      <button
+        type="button"
+        onClick={() =>
+          dispatch(
+            taskMutationErrorCleared(),
+          )
+        }
+        aria-label="Dismiss task error"
+      >
+        ×
+      </button>
+    </div>
+  )}
+
+  {activeView === 'overview' && (
+    <>
+      <section className="dashboard-heading">
+        <div>
+          <p className="page-eyebrow">
+            Project overview
+          </p>
+
+          <h1>
+            {selectedProjectId &&
+            selectedProject
+              ? selectedProject.name
+              : 'All projects'}
+          </h1>
+
+          <p>
+            {selectedProject?.description ??
+              'Monitor team activity and manage work across every active project.'}
+          </p>
+        </div>
+
+        <div className="dashboard-heading-actions">
+          {/* <button
+            type="button"
+            className="secondary-button"
+          >
+            Export report
+          </button> */}
+
+          <button
+            type="button"
+            className="primary-button"
+            onClick={handleCreateTask}
+          >
+            <span>+</span>
+            New task
+          </button>
+        </div>
+      </section>
+
+      <section className="statistics-grid">
+        <article className="statistic-card">
+          <div className="statistic-card-header">
+            <span>Total tasks</span>
+
+            <div className="statistic-icon">
+              ▦
             </div>
-        )}
+          </div>
 
-          <section className="dashboard-heading">
-            <div>
-              <p className="page-eyebrow">
-                Project overview
-              </p>
+          <strong>
+            {taskStatistics.total}
+          </strong>
 
-              <h1>
-                {selectedProjectId &&
-                selectedProject
-                  ? selectedProject.name
-                  : 'All projects'}
-              </h1>
+          <p>
+            {taskStatistics.todo}{' '}
+            waiting to be started
+          </p>
+        </article>
 
-              <p>
-                {selectedProject?.description ??
-                  'Monitor team activity and manage work across every active project.'}
-              </p>
+        <article className="statistic-card">
+          <div className="statistic-card-header">
+            <span>Team members</span>
+
+            <div className="statistic-icon">
+              ♙
             </div>
+          </div>
 
-            <div className="dashboard-heading-actions">
-              <button
-                type="button"
-                className="secondary-button"
-              >
-                Export report
-              </button>
+          <strong>
+            {employees.length}
+          </strong>
 
-              <button
-                type="button"
-                className="primary-button"
-                onClick={handleCreateTask}
-              >
-                <span>+</span>
-                New task
-              </button>
+          <p>
+            Available for task assignment
+          </p>
+        </article>
+
+        <article className="statistic-card">
+          <div className="statistic-card-header">
+            <span>In progress</span>
+
+            <div className="statistic-icon">
+              ◷
             </div>
-          </section>
+          </div>
 
-          <section className="statistics-grid">
-            <article className="statistic-card">
-              <div className="statistic-card-header">
-                <span>Total task</span>
-                <div className="statistic-icon">▦</div>
-              </div>
+          <strong>
+            {taskStatistics.inProgress}
+          </strong>
 
-              <strong>{taskStatistics.total}</strong>
+          <p>
+            {taskStatistics.overdue}{' '}
+            overdue{' '}
+            {taskStatistics.overdue === 1
+              ? 'task'
+              : 'tasks'}{' '}
+            need attention
+          </p>
+        </article>
 
-              <p>
-                <span className="positive-change">
-                  {taskStatistics.todo}
-                </span>{' '}
-                waiting to be started
-              </p>
-            </article>
+        <article className="statistic-card">
+          <div className="statistic-card-header">
+            <span>Completed</span>
 
-            <article className="statistic-card">
-              <div className="statistic-card-header">
-                <span>Team members</span>
-                <div className="statistic-icon">♙</div>
-              </div>
-
-              <strong>{employees.length}</strong>
-
-              <p>
-                <span className="positive-change">
-                  Available
-                </span>{' '}
-                for task assignment
-              </p>
-            </article>
-
-            <article className="statistic-card">
-              <div className="statistic-card-header">
-                <span>In progress</span>
-                <div className="statistic-icon">◷</div>
-              </div>
-
-              <strong>
-                {taskStatistics.inProgress}
-              </strong>
-
-              <p>
-                {taskStatistics.overdue} overduetask
-                {taskStatistics.overdue === 1
-                  ? ''
-                  : 's'}{' '}
-                need attention
-              </p>
-            </article>
-
-            <article className="statistic-card">
-              <div className="statistic-card-header">
-                <span>Completed</span>
-                <div className="statistic-icon">✓</div>
-              </div>
-
-              <strong>
-                {taskStatistics.completed}
-              </strong>
-
-              <p>
-                {taskStatistics.total} matching task
-                {taskStatistics.total === 1
-                  ? ''
-                  : 's'}{' '}
-                  across the selected workspace
-              </p>
-            </article>
-          </section>
-
-          <section className="board-section">
-
-            <div className="board-toolbar">
-
-              <div>
-                <h2>
-                  Task board
-                </h2>
-
-                <p>
-                  {taskStatistics.total} task
-                  {taskStatistics.total === 1 ? '' : 's'}{' '}
-                </p>
-              </div>
-
-
-              <div className="board-toolbar-actions">
-
-              <button
-                type="button"
-                className={`filter-button ${
-                  hasActiveFilters ? 'filter-button--active' : ''
-                }`}
-                onClick={() => setFiltersOpen(true)}
-              >
-                Filter
-
-                {hasActiveFilters && (
-                  <span className="active-filter-dot" />
-                )}
-              </button>
-
-
-                <button
-                  type="button"
-                  className="filter-button"
-                >
-                  Sort by
-                </button>
-
-              </div>
-
-
+            <div className="statistic-icon">
+              ✓
             </div>
+          </div>
 
+          <strong>
+            {taskStatistics.completed}
+          </strong>
 
-            <TaskBoard
-              onEditTask={handleEditTask}
-            />
+          <p>
+            {taskStatistics.total === 0
+              ? 'No tasks in this project'
+              : `${Math.round(
+                  (taskStatistics.completed /
+                    taskStatistics.total) *
+                    100,
+                )}% completion rate`}
+          </p>
+        </article>
+      </section>
 
+      <section className="board-section">
+        <div className="board-toolbar">
+          <div>
+            <h2>Recent task board</h2>
 
-          </section>
-        </main>
+            <p>
+              Monitor work across each
+              delivery stage.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            className="secondary-button"
+            onClick={() =>
+              dispatch(
+                activeViewChanged(
+                  'tasks',
+                ),
+              )
+            }
+          >
+            Open full board
+          </button>
+        </div>
+
+        <TaskBoard
+          onEditTask={handleEditTask}
+        />
+      </section>
+    </>
+  )}
+
+  {activeView === 'tasks' && (
+    <TaskBoardView
+      onCreateTask={handleCreateTask}
+      onEditTask={handleEditTask}
+      onOpenFilters={() =>
+        setFiltersOpen(true)
+      }
+    />
+  )}
+
+  {activeView === 'team' && (
+    <TeamMembersView />
+  )}
+</main>
       </div>
 
       <TaskFilters

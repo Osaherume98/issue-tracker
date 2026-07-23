@@ -15,6 +15,16 @@ import {
   useAppSelector,
 } from '../app/hooks';
 
+import {
+  activeViewChanged,
+  selectActiveView,
+  type WorkspaceView,
+} from '../features/ui/uiSlice';
+
+import {
+  notificationPanelOpened,
+} from '../features/notifications/notificationsSlice';
+
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
@@ -42,8 +52,19 @@ function Sidebar({
     projectId: string | null,
   ): void => {
     dispatch(projectSelected(projectId));
+    dispatch(activeViewChanged('overview'));
     onClose();
   };
+
+  const activeView = useAppSelector(
+    selectActiveView,
+);
+
+  const handleViewChange = (
+    view: WorkspaceView,): void => {
+    dispatch(activeViewChanged(view));
+    onClose();
+};
 
   return (
     <>
@@ -78,43 +99,83 @@ function Sidebar({
             Workspace
           </p>
 
-          <button
-            type="button"
-            className="sidebar-link sidebar-link--active"
-          >
-            <span className="sidebar-icon">⌂</span>
-            Overview
-          </button>
+        <button
+        type="button"
+        className={`sidebar-link ${
+            activeView === 'overview'
+            ? 'sidebar-link--active'
+            : ''
+        }`}
+        onClick={() =>
+            handleViewChange('overview')
+        }
+        >
+        <span className="sidebar-icon">
+            ⌂
+        </span>
 
-          <button
-            type="button"
-            className="sidebar-link"
-          >
-            <span className="sidebar-icon">▦</span>
-            Task board
-          </button>
+        Overview
+        </button>
 
-          <button
-            type="button"
-            className="sidebar-link"
-          >
-            <span className="sidebar-icon">♙</span>
-            Team members
+        <button
+        type="button"
+        className={`sidebar-link ${
+            activeView === 'tasks'
+            ? 'sidebar-link--active'
+            : ''
+        }`}
+        onClick={() =>
+            handleViewChange('tasks')
+        }
+        >
+        <span className="sidebar-icon">
+            ▦
+        </span>
 
-            <span className="sidebar-count">
-              {employeesCount}
-            </span>
-          </button>
+        Task board
+        </button>
 
-          <button
-            type="button"
-            className="sidebar-link"
-          >
-            <span className="sidebar-icon">◉</span>
-            Notifications
+        <button
+        type="button"
+        className={`sidebar-link ${
+            activeView === 'team'
+            ? 'sidebar-link--active'
+            : ''
+        }`}
+        onClick={() =>
+            handleViewChange('team')
+        }
+        >
+        <span className="sidebar-icon">
+            ♙
+        </span>
 
-            <span className="notification-dot" />
-          </button>
+        Team members
+
+        <span className="sidebar-count">
+            {employeesCount}
+        </span>
+        </button>
+
+        <button
+        type="button"
+        className="sidebar-link"
+        onClick={() => {
+            dispatch(
+            notificationPanelOpened(),
+            );
+
+            onClose();
+        }}
+        >
+        <span className="sidebar-icon">
+            ◉
+        </span>
+
+        Notifications
+
+        <span className="notification-dot" />
+        </button>
         </nav>
 
         <section className="sidebar-projects">

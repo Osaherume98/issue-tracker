@@ -7,6 +7,7 @@ import employeesReducer from '../features/employees/employeesSlice';
 import filtersReducer from '../features/filters/filtersSlice';
 import notificationsReducer from '../features/notifications/notificationsSlice';
 import projectsReducer from '../features/projects/projectsSlice';
+import uiReducer from '../features/ui/uiSlice';
 
 import {
   taskSelectors,
@@ -139,11 +140,11 @@ export const store = configureStore({
     filters: filtersReducer,
     notifications:
       notificationsReducer,
+    ui: uiReducer,
   },
 
   middleware: (
-    getDefaultMiddleware,
-  ) =>
+    getDefaultMiddleware,) =>
     getDefaultMiddleware().prepend(
       listenerMiddleware.middleware,
     ),
