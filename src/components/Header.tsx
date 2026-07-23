@@ -15,6 +15,11 @@ import {
   selectSearchTerm,
 } from '../features/filters/filtersSlice';
 
+import {
+  notificationPanelToggled,
+  selectUnreadNotificationCount,
+} from '../features/notifications/notificationsSlice';
+
 interface HeaderProps {
   onOpenSidebar: () => void;
   onCreateTask: () => void;
@@ -62,6 +67,12 @@ function Header({
       );
     };
   }, []);
+
+  const unreadNotificationCount =
+  useAppSelector(
+    selectUnreadNotificationCount,
+  );
+
 
   const handleSearchChange = (
     event: ChangeEvent<HTMLInputElement>,
@@ -131,15 +142,20 @@ function Header({
 
       <div className="topbar-actions">
         <button
-          type="button"
-          className="icon-button"
-          aria-label="View notifications"
-        >
-          ♢
+            type="button"
+            className="icon-button"
+            aria-label="View notifications"
+            onClick={() =>
+                dispatch(notificationPanelToggled())
+            }
+            >
+            ♢
 
-          <span className="icon-button-badge">
-            3
-          </span>
+            {unreadNotificationCount > 0 && (
+                <span className="icon-button-badge">
+                {unreadNotificationCount > 9 ? '9+' : unreadNotificationCount}
+            </span>
+        )}
         </button>
 
         <button

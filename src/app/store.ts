@@ -4,8 +4,13 @@ import {
 
 import employeesReducer from '../features/employees/employeesSlice';
 import filtersReducer from '../features/filters/filtersSlice';
+import notificationsReducer from '../features/notifications/notificationsSlice';
 import projectsReducer from '../features/projects/projectsSlice';
 import tasksReducer from '../features/tasks/tasksSlice';
+
+import {
+  listenerMiddleware,
+} from './listenerMiddleware';
 
 export const store = configureStore({
   reducer: {
@@ -13,7 +18,13 @@ export const store = configureStore({
     employees: employeesReducer,
     tasks: tasksReducer,
     filters: filtersReducer,
+    notifications: notificationsReducer,
   },
+
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().prepend(
+      listenerMiddleware.middleware,
+    ),
 });
 
 export type RootState =

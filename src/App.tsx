@@ -11,6 +11,12 @@ import TaskFormModal from './features/tasks/TaskFormModal';
 import TaskFilters from './features/filters/TaskFilters';
 import type { Task } from './types';
 
+import NotificationPanel from './features/notifications/NotificationPanel';
+
+import {
+  selectNotificationPanelOpen,
+} from './features/notifications/notificationsSlice';
+
 import {
   useAppDispatch,
   useAppSelector,
@@ -111,6 +117,12 @@ function App() {
     selectHasActiveFilters,
    );
 
+   const notificationPanelOpen =
+    useAppSelector(
+    selectNotificationPanelOpen,
+  );
+
+   
 useEffect(() => {
   if (hasInitialised.current) {
     return;
@@ -412,6 +424,10 @@ const isLoading =
         editingTaskId={editingTaskId}
         onClose={handleCloseTaskModal}
       />
+
+      {notificationPanelOpen && (
+        <NotificationPanel />
+    )}
 
     </div>
   );
