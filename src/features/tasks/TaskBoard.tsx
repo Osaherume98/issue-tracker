@@ -3,6 +3,7 @@ import { useAppSelector } from '../../app/hooks';
 import type { Task } from '../../types';
 
 import {
+  selectVisibleTasks,
   selectVisibleTasksByStatus,
 } from './tasksSlice';
 
@@ -10,11 +11,17 @@ import TaskColumn from './TaskColumn';
 
 interface TaskBoardProps {
   onEditTask: (task: Task) => void;
+  onCreateTask?: () => void;
 }
 
 function TaskBoard({
   onEditTask,
+  onCreateTask,
 }: TaskBoardProps) {
+  const visibleTasks = useAppSelector(
+    selectVisibleTasks,
+  );
+
   const todoTasks = useAppSelector((state) =>
     selectVisibleTasksByStatus(
       state,
@@ -45,6 +52,34 @@ function TaskBoard({
         'completed',
       ),
   );
+
+  if (visibleTasks.length === 0) {
+    return (
+      <section className="task-board-empty-state">
+        <div className="task-board-empty-icon">
+          ▦
+        </div>
+
+        <h3>No tasks yet</h3>
+
+        <p>
+          Create your first task and assign it
+          to CLM or LogiRate.
+        </p>
+
+        {onCreateTask && (
+          <button
+            type="button"
+            className="primary-button"
+            onClick={onCreateTask}
+          >
+            <span>+</span>
+            Create first task
+          </button>
+        )}
+      </section>
+    );
+  }
 
   return (
     <div className="kanban-board">

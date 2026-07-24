@@ -237,20 +237,19 @@ function Sidebar({
             <ResetWorkspaceButton />
         </div>
         <div className="sidebar-profile">
-          <div className="profile-avatar">AO</div>
+          <div className="profile-avatar">DNG</div>
 
           <div className="profile-details">
             <strong>DARUM NG</strong>
-            <span>Frontend Developer</span>
           </div>
 
-          <button
+          {/* <button
             type="button"
             className="profile-menu-button"
             aria-label="Open profile menu"
           >
             ⋮
-          </button>
+          </button> */}
         </div>
       </aside>
     </>

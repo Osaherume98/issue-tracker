@@ -85,7 +85,7 @@ function App() {
 
   const tasksStatus = useAppSelector(
     selectTasksStatus,
-  );``
+  );
 
   const projectsError = useAppSelector(
     selectProjectsError,
@@ -413,6 +413,7 @@ const isLoading =
 
         <TaskBoard
           onEditTask={handleEditTask}
+          onCreateTask={handleCreateTask}
         />
       </section>
     </>
@@ -439,11 +440,13 @@ const isLoading =
         onClose={() => setFiltersOpen(false)}
       />
 
-      <TaskFormModal
-        isOpen={taskModalOpen}
-        editingTaskId={editingTaskId}
-        onClose={handleCloseTaskModal}
-      />
+  {taskModalOpen && (
+    <TaskFormModal
+      isOpen={taskModalOpen}
+      editingTaskId={editingTaskId}
+      onClose={handleCloseTaskModal}
+    />
+)}
 
       {notificationPanelOpen && (
         <NotificationPanel />

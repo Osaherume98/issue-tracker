@@ -96,9 +96,34 @@ function TaskFormModal({
     selectTaskUpdateStatus,
   );
 
+  const createInitialFormData =
+    (): CreateTaskInput => {
+      if (editingTask) {
+        return {
+          projectId: editingTask.projectId,
+          title: editingTask.title,
+          description: editingTask.description,
+          status: editingTask.status,
+          priority: editingTask.priority,
+          assignedEmployeeIds: [
+            ...editingTask.assignedEmployeeIds,
+          ],
+          dueDate: editingTask.dueDate,
+        };
+      }
+
+      return {
+        ...initialFormState,
+        projectId:
+          selectedProjectId ??
+          projects[0]?.id ??
+          '',
+      };
+    };
+
   const [formData, setFormData] =
     useState<CreateTaskInput>(
-      initialFormState,
+      createInitialFormData,
     );
 
   const [errors, setErrors] =
@@ -112,46 +137,10 @@ function TaskFormModal({
     updateStatus === 'loading';
 
   useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
     dispatch(taskMutationErrorCleared());
     dispatch(taskCreateStatusReset());
     dispatch(taskUpdateStatusReset());
-
-    setErrors({});
-
-    if (editingTask) {
-      setFormData({
-        projectId: editingTask.projectId,
-        title: editingTask.title,
-        description: editingTask.description,
-        status: editingTask.status,
-        priority: editingTask.priority,
-        assignedEmployeeIds: [
-          ...editingTask.assignedEmployeeIds,
-        ],
-        dueDate: editingTask.dueDate,
-      });
-
-      return;
-    }
-
-    setFormData({
-      ...initialFormState,
-      projectId:
-        selectedProjectId ??
-        projects[0]?.id ??
-        '',
-    });
-  }, [
-    dispatch,
-    editingTask,
-    isOpen,
-    projects,
-    selectedProjectId,
-  ]);
+  }, [dispatch]);
 
   useEffect(() => {
     const operationSucceeded =
@@ -195,6 +184,9 @@ function TaskFormModal({
       handleKeyDown,
     );
 
+    const previousBodyOverflow =
+      document.body.style.overflow;
+
     document.body.style.overflow =
       'hidden';
 
@@ -204,7 +196,8 @@ function TaskFormModal({
         handleKeyDown,
       );
 
-      document.body.style.overflow = '';
+      document.body.style.overflow =
+        previousBodyOverflow;
     };
   }, [
     isOpen,
@@ -222,6 +215,9 @@ function TaskFormModal({
     const trimmedTitle =
       formData.title.trim();
 
+    const trimmedDescription =
+      formData.description.trim();
+
     if (!trimmedTitle) {
       nextErrors.title =
         'Task title is required.';
@@ -232,7 +228,7 @@ function TaskFormModal({
         'Task title must not exceed 100 characters.';
     }
 
-    if (!formData.description.trim()) {
+    if (!trimmedDescription) {
       nextErrors.description =
         'Description is required.';
     }
@@ -287,17 +283,34 @@ function TaskFormModal({
     const isChecked =
       event.target.checked;
 
-    setFormData((current) => ({
-      ...current,
-      assignedEmployeeIds: isChecked
-        ? [
+    setFormData((current) => {
+      const alreadyAssigned =
+        current.assignedEmployeeIds.includes(
+          employeeId,
+        );
+
+      if (isChecked && !alreadyAssigned) {
+        return {
+          ...current,
+          assignedEmployeeIds: [
             ...current.assignedEmployeeIds,
             employeeId,
-          ]
-        : current.assignedEmployeeIds.filter(
-            (id) => id !== employeeId,
-          ),
-    }));
+          ],
+        };
+      }
+
+      if (!isChecked && alreadyAssigned) {
+        return {
+          ...current,
+          assignedEmployeeIds:
+            current.assignedEmployeeIds.filter(
+              (id) => id !== employeeId,
+            ),
+        };
+      }
+
+      return current;
+    });
   };
 
   const handleSubmit = (
@@ -328,12 +341,16 @@ function TaskFormModal({
         ...cleanedInput,
       };
 
-      void dispatch(updateTask(updateInput));
+      void dispatch(
+        updateTask(updateInput),
+      );
 
       return;
     }
 
-    void dispatch(createTask(cleanedInput));
+    void dispatch(
+      createTask(cleanedInput),
+    );
   };
 
   const handleClose = (): void => {
@@ -413,6 +430,7 @@ function TaskFormModal({
               }
               placeholder="Example: Build account settings page"
               disabled={isSubmitting}
+              maxLength={100}
               autoFocus
             />
 

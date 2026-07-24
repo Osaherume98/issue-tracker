@@ -132,6 +132,7 @@ function TaskBoardView({
 
         <TaskBoard
           onEditTask={onEditTask}
+          onCreateTask={onCreateTask}
         />
       </section>
     </section>
