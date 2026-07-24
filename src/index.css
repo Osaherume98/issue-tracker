@@ -9,6 +9,7 @@
     Inter, system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
   color: #172033;
+  font-weight: 400;
   background-color: #f4f6fa;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -17,6 +18,7 @@
 body {
   min-width: 320px;
   min-height: 100vh;
+  font-weight: 400;
   background-color: #f4f6fa;
 }
 
@@ -285,9 +287,11 @@ input {
 
 .mobile-menu-button {
   display: none;
+  align-items: center;
+  justify-content: center;
   padding: 8px;
   background: transparent;
-  font-size: 1.25rem;
+  /* font-size: 1.25rem; */
 }
 
 .global-search {
@@ -314,7 +318,7 @@ input {
   color: #98a2b3;
 }
 
-.global-search kbd {
+/* .global-search kbd {
   padding: 3px 7px;
   background-color: #ffffff;
   border: 1px solid #dde3ea;
@@ -322,7 +326,7 @@ input {
   color: #7b8495;
   font-family: inherit;
   font-size: 0.66rem;
-}
+} */
 
 .topbar-actions {
   display: flex;
@@ -2065,4 +2069,64 @@ input {
 
 .task-board-empty-state .primary-button {
   margin-top: 20px;
+}
+
+.sidebar-icon,
+.statistic-icon,
+.icon-button,
+/* .mobile-menu-button, */
+.search-clear-button,
+.modal-close-button,
+.filter-close-button,
+.notification-close-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.task-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.task-edit-button,
+.task-delete-button,
+.create-task-button,
+.primary-button,
+.secondary-button,
+.filter-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.dashboard-heading h1,
+.view-heading h1 {
+  font-weight: 700;
+}
+
+.dashboard-heading p,
+.view-heading p,
+.task-description,
+.statistic-card p,
+.board-toolbar p {
+  font-weight: 400;
+}
+
+.task-card h4,
+.board-toolbar h2,
+.kanban-column-header h3 {
+  font-weight: 600;
+}
+
+.sidebar-link,
+.project-link {
+  font-weight: 500;
+}
+
+.sidebar-link--active,
+.project-link--active {
+  font-weight: 600;
 }

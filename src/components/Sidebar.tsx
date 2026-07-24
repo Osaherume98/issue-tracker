@@ -25,6 +25,15 @@ import {
   notificationPanelOpened,
 } from '../features/notifications/notificationsSlice';
 
+import {
+  Bell,
+  CircleUserRound,
+  FolderKanban,
+  LayoutDashboard,
+  Plus,
+  Users,
+} from 'lucide-react';
+
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
@@ -83,8 +92,7 @@ function Sidebar({
         }`}
       >
         <div className="sidebar-brand">
-          <div className="brand-logo">T</div>
-
+          {/* <div className="brand-logo">T</div> */}
           <div>
             <strong>TeamFlow</strong>
             <span>Project workspace</span>
@@ -111,7 +119,7 @@ function Sidebar({
         }
         >
         <span className="sidebar-icon">
-            ⌂
+            <LayoutDashboard size={18} />
         </span>
 
         Overview
@@ -129,7 +137,7 @@ function Sidebar({
         }
         >
         <span className="sidebar-icon">
-            ▦
+            <FolderKanban size={18} />
         </span>
 
         Task board
@@ -147,7 +155,7 @@ function Sidebar({
         }
         >
         <span className="sidebar-icon">
-            ♙
+            <Users size={18} />
         </span>
 
         Team members
@@ -169,7 +177,7 @@ function Sidebar({
         }}
         >
         <span className="sidebar-icon">
-            ◉
+            <Bell size={18} />
         </span>
 
         Notifications
@@ -189,7 +197,7 @@ function Sidebar({
               className="sidebar-add-button"
               aria-label="Add project"
             >
-              +
+              <Plus size={16} />
             </button>
           </div>
 
@@ -243,13 +251,13 @@ function Sidebar({
             <strong>DARUM NG</strong>
           </div>
 
-          {/* <button
+          <button
             type="button"
             className="profile-menu-button"
             aria-label="Open profile menu"
           >
-            ⋮
-          </button> */}
+            <CircleUserRound size={18} />
+          </button>
         </div>
       </aside>
     </>

@@ -1,5 +1,5 @@
 import {
-  useEffect,
+  // useEffect,
   useRef,
   type ChangeEvent,
   type KeyboardEvent,
@@ -20,6 +20,14 @@ import {
   selectUnreadNotificationCount,
 } from '../features/notifications/notificationsSlice';
 
+import {
+  Bell,
+  Menu,
+  Plus,
+  Search,
+  X,
+} from 'lucide-react';
+
 interface HeaderProps {
   onOpenSidebar: () => void;
   onCreateTask: () => void;
@@ -35,38 +43,38 @@ function Header({
     selectSearchTerm,
   );
 
-  const searchInputRef =
-    useRef<HTMLInputElement>(null);
+  // const searchInputRef =
+  //   useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    const handleKeyboardShortcut = (
-      event: globalThis.KeyboardEvent,
-    ): void => {
-      const isSearchShortcut =
-        (event.ctrlKey || event.metaKey) &&
-        event.key.toLowerCase() === 'k';
+  // useEffect(() => {
+  //   const handleKeyboardShortcut = (
+  //     event: globalThis.KeyboardEvent,
+  //   ): void => {
+  //     const isSearchShortcut =
+  //       (event.ctrlKey || event.metaKey) &&
+  //       event.key.toLowerCase() === 'k';
 
-      if (!isSearchShortcut) {
-        return;
-      }
+  //     if (!isSearchShortcut) {
+  //       return;
+  //     }
 
-      event.preventDefault();
+  //     event.preventDefault();
 
-      searchInputRef.current?.focus();
-    };
+  //     searchInputRef.current?.focus();
+  //   };
 
-    window.addEventListener(
-      'keydown',
-      handleKeyboardShortcut,
-    );
+  //   window.addEventListener(
+  //     'keydown',
+  //     handleKeyboardShortcut,
+  //   );
 
-    return () => {
-      window.removeEventListener(
-        'keydown',
-        handleKeyboardShortcut,
-      );
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener(
+  //       'keydown',
+  //       handleKeyboardShortcut,
+  //     );
+  //   };
+  // }, []);
 
   const unreadNotificationCount =
   useAppSelector(
@@ -104,16 +112,16 @@ function Header({
         aria-label="Open navigation"
         onClick={onOpenSidebar}
       >
-        ☰
+        <Menu size={22} />
       </button>
 
       <label className="global-search">
         <span aria-hidden="true">
-          ⌕
+          <Search size={18} />
         </span>
 
         <input
-          ref={searchInputRef}
+          // ref={searchInputRef}
           type="search"
           value={searchTerm}
           onChange={handleSearchChange}
@@ -121,22 +129,17 @@ function Header({
           placeholder="Search tasks by title or description"
           aria-label="Search tasks"
         />
-
-        {searchTerm ? (
+        {searchTerm && (
           <button
             type="button"
             className="search-clear-button"
             onClick={() =>
-              dispatch(
-                searchTermChanged(''),
-              )
+              dispatch(searchTermChanged(''))
             }
             aria-label="Clear task search"
           >
-            ×
+            <X size={16} />
           </button>
-        ) : (
-          <kbd>Ctrl K</kbd>
         )}
       </label>
 
@@ -149,7 +152,7 @@ function Header({
                 dispatch(notificationPanelToggled())
             }
             >
-            ♢
+            <Bell size={18} />
 
             {unreadNotificationCount > 0 && (
                 <span className="icon-button-badge">
@@ -163,7 +166,7 @@ function Header({
           className="create-task-button"
           onClick={onCreateTask}
         >
-          <span>+</span>
+          <Plus size={17} />
           Create task
         </button>
       </div>

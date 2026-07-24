@@ -37,6 +37,8 @@ import {
   updateTask,
 } from './tasksSlice';
 
+import { X } from 'lucide-react';
+
 interface TaskFormModalProps {
   isOpen: boolean;
   editingTaskId: string | null;
@@ -404,7 +406,7 @@ function TaskFormModal({
             disabled={isSubmitting}
             aria-label="Close task form"
           >
-            ×
+            <X size={18} />
           </button>
         </header>
 

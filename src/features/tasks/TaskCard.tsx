@@ -21,6 +21,12 @@ import {
   selectIsTaskUpdating,
 } from './tasksSlice';
 
+import {
+  CalendarDays,
+  Pencil,
+  Trash2,
+} from 'lucide-react';
+
 interface TaskCardProps {
   task: Task;
   onEdit: () => void;
@@ -138,6 +144,7 @@ function TaskCard({
       </p>
 
       <div className="task-meta">
+        <CalendarDays size={14} />
         <span>
           Due: {formatDueDate(task.dueDate)}
         </span>
@@ -205,6 +212,7 @@ function TaskCard({
             disabled={isBusy}
             aria-label={`Edit ${task.title}`}
         >
+          <Pencil size={14} />
             Edit
         </button>
 
@@ -215,6 +223,7 @@ function TaskCard({
             disabled={isBusy}
             aria-label={`Delete ${task.title}`}
         >
+            <Trash2 size={14} />
             Delete
         </button>
       </div>

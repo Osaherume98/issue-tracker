@@ -23,6 +23,13 @@ import {
 } from './features/ui/uiSlice';
 
 import {
+  CheckCircle2,
+  Clock3,
+  ListTodo,
+  Users,
+} from 'lucide-react';
+
+import {
   selectNotificationPanelOpen,
 } from './features/notifications/notificationsSlice';
 
@@ -305,7 +312,7 @@ const isLoading =
             <span>Total tasks</span>
 
             <div className="statistic-icon">
-              ▦
+              <ListTodo size={18} />
             </div>
           </div>
 
@@ -324,7 +331,7 @@ const isLoading =
             <span>Team members</span>
 
             <div className="statistic-icon">
-              ♙
+              <Users size={18} />
             </div>
           </div>
 
@@ -342,7 +349,7 @@ const isLoading =
             <span>In progress</span>
 
             <div className="statistic-icon">
-              ◷
+              <Clock3 size={18} />
             </div>
           </div>
 
@@ -365,7 +372,7 @@ const isLoading =
             <span>Completed</span>
 
             <div className="statistic-icon">
-              ✓
+              <CheckCircle2 size={18} />
             </div>
           </div>
 
