@@ -5,7 +5,7 @@ export const mockProjects: Project[] = [
     id: 'project-1',
     name: 'CML',
     description:
-      'Build a new customer-facing portal for account and service management.',
+      'builds systems that effectively manage your supply chain operations from warehouse management to air freight mobility and distribution.',
     color: '#FA0007',
     createdAt: '2026-07-01T09:00:00.000Z',
   },
